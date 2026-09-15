@@ -13,12 +13,12 @@ test_that("quantile summaries respect basic distributional invariants", {
   x <- seq_len(100)
 
   expect_type(hd(x), "double")
-  expect_gt(hd.iqr(x), 0)
-  expect_gt(hd.lts(x), 0)
-  expect_gt(hd.uts(x), 0)
-  expect_equal(hd.crub(x, L = 0, U = 101), (101 - hd(x)) / 101)
-  expect_error(hd.crub(x, L = 1), "supplied together")
-  expect_error(hd.crub(x, L = 2, U = 1), "L must be")
+  expect_gt(hd_iqr(x), 0)
+  expect_gt(hd_lts(x), 0)
+  expect_gt(hd_uts(x), 0)
+  expect_equal(hd_crub(x, L = 0, U = 101), (101 - hd(x)) / 101)
+  expect_error(hd_crub(x, L = 1), "supplied together")
+  expect_error(hd_crub(x, L = 2, U = 1), "L must be")
 })
 
 test_that("Winsorized summaries have expected shapes", {

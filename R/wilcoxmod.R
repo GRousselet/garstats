@@ -24,7 +24,7 @@
 #' @importFrom stats cor mad median optim pbeta pbinom pt qbinom qnorm qt quantile var
 NULL
 
-#' Harrell-Davis estimate of a quantile
+#' Harrell-Davis quantile estimator
 #'
 #' @param x Numeric data vector.
 #' @param q Desired quantile, between 0 and 1.
@@ -32,7 +32,10 @@ NULL
 #' @export
 #'
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
-# Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#'
+#' Harrell, F. E., & Davis, C. E. (1982). A new distribution-free quantile estimator.
+#' Biometrika, 69(3), 635–640. https://doi.org/10.1093/biomet/69.3.635
 hd <- function(x, q = 0.5) {
   n <- length(x)
   m1 <- (n + 1) * q

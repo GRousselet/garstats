@@ -46,7 +46,7 @@ utils::globalVariables(c("gp", "x", "y"))
 #'
 #' @return A ggplot object.
 #' @export
-plot.boot <- function(x, ci = NULL, ci_level = 0.97,
+plot_boot <- function(x, ci = NULL, ci_level = 0.97,
                       alternative = c("two.sided", "less", "greater"),
                       estimate = NULL, hyp = NULL, show_hyp = TRUE,
                       label_x_offset = NULL, label_y_offset = NULL,
@@ -168,11 +168,11 @@ plot.boot <- function(x, ci = NULL, ci_level = 0.97,
  #' @param point_colour Point colour.
  #' @param point_alpha Point transparency.
  #' @param xlab,ylab Axis labels.
- #' @param plot.theme A ggplot2 theme. Defaults to `garstats::theme_gar()`.
- #' @param ... Additional arguments accepted for compatibility with [plot()].
+#' @param plot_theme A ggplot2 theme. Defaults to `garstats::theme_gar()`.
+#' @param ... Additional arguments passed to `ggplot2::geom_point()`.
  #' @return A ggplot object.
  #' @export
-plot.boot2 <- function(x, y = NULL, level = 0.97,
+plot_boot2 <- function(x, y = NULL, level = 0.97,
                        ellipse_linetype = "dashed", ellipse_colour = "darkorange",
                        ellipse_linewidth = 1,
                        plot_diag = TRUE, diag_linetype = "dashed",
@@ -180,7 +180,7 @@ plot.boot2 <- function(x, y = NULL, level = 0.97,
                        point_colour = "black", point_alpha = 0.35,
                        xlab = "Bootstrap group 1 estimates",
                        ylab = "Bootstrap group 2 estimates",
-                       plot.theme = NULL, ...) {
+                       plot_theme = NULL, ...) {
   if (is.list(x)) {
     y <- x$boot.estimates.y
     x <- x$boot.estimates.x
@@ -192,13 +192,13 @@ plot.boot2 <- function(x, y = NULL, level = 0.97,
   }
   if (level <= 0 || level >= 1) stop("level must be between 0 and 1.")
   data <- data.frame(x = x, y = y)
-  if (is.null(plot.theme)) plot.theme <- garstats::theme_gar()
+  if (is.null(plot_theme)) plot_theme <- garstats::theme_gar()
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = y)) +
-    ggplot2::geom_point(colour = point_colour, alpha = point_alpha) +
+    ggplot2::geom_point(colour = point_colour, alpha = point_alpha, ...) +
     ggplot2::stat_ellipse(level = level, linetype = ellipse_linetype,
                           colour = ellipse_colour, linewidth = ellipse_linewidth) +
     ggplot2::labs(x = xlab, y = ylab) +
-    plot.theme +
+    plot_theme +
     ggplot2::theme(aspect.ratio = 1)
   if (plot_diag){
     plot <- plot +
@@ -218,10 +218,10 @@ plot.boot2 <- function(x, y = NULL, level = 0.97,
 #' @param x.col,y.col Colours for the plotted functions.
 #' @param x.lt,y.lt Line types for the plotted functions.
 #' @param legend.width Width of the legend keys.
-#' @param ... Additional arguments accepted for compatibility with [plot()].
+#' @param ... Additional arguments passed to `ggplot2::stat_ecdf()`.
 #' @return A ggplot2 object.
 #' @export
-plot.ecdf <- function(x, y = NULL, xlab = "Measurements", ylab = "F(x) = proportion <= x",
+plot_ecdf <- function(x, y = NULL, xlab = "Measurements", ylab = "F(x) = proportion <= x",
                       theme = NULL, x.name = "Group 1", y.name = "Group 2",
                       x.col = "black", y.col = "grey60",
                       x.lt = "longdash", y.lt = "solid",
@@ -242,7 +242,7 @@ plot.ecdf <- function(x, y = NULL, xlab = "Measurements", ylab = "F(x) = proport
   # make plot
   if (is.null(theme)) theme <- garstats::theme_gar()
   ggplot2::ggplot(df, ggplot2::aes(x=x, colour=gp, linetype=gp)) +
-    ggplot2::stat_ecdf(geom = "step", linewidth = 1) +
+    ggplot2::stat_ecdf(geom = "step", linewidth = 1, ...) +
     ggplot2::labs(x = xlab, y = ylab) +
     theme +
         ggplot2::scale_linetype_manual(values = line_types) +

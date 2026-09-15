@@ -59,10 +59,10 @@ keeporder <- function(x){
 #' n_iter <- 2000 # simulation iterations
 #' inc.step <- 100 # increments
 #' for (iter in 1:n_iter) {
-#'   sim.counter(iter, n_iter, inc = inc.step, name = "Normal")
+#'   sim_counter(iter, n_iter, inc = inc.step, name = "Normal")
 #' }
 #' @export
-sim.counter <- function(S, nsim, inc, name = "Simulation"){
+sim_counter <- function(S, nsim, inc, name = "Simulation"){
   if(S == 1){
     # print(paste(nsim,"iterations:",S))
     cat(name, nsim,"iterations:",S)

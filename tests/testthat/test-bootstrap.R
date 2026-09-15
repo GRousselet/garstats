@@ -25,7 +25,7 @@ test_that("two-sample bootstrap inference returns expected outputs", {
   expect_length(result$boot.estimates.y, 40)
 })
 
-test_that("bootstrap results honor one-sided confidence intervals", {
+test_that("Yuenbt bootstrap inference returns expected outputs for one-sided confidence intervals", {
   set.seed(4)
   result <- yuenbt(rnorm(25, mean = 1), rnorm(25),
                    nboot = 40, alternative = "greater")
