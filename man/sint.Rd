@@ -4,15 +4,23 @@
 \alias{sint}
 \title{Parametric confidence interval for a median}
 \usage{
-sint(x, alpha = 0.03)
+sint(x, y = NULL, alpha = 0.03, hyp = 0)
 }
 \arguments{
-\item{x}{Numeric data vector. Missing values must be removed first.}
+\item{x}{Numeric data vector for the first measurement. Missing values must
+be removed first.}
+
+\item{y}{Optional numeric data vector for the second measurement. When
+supplied, it must have the same length as \code{x} and inference is performed
+on \code{x - y}.}
 
 \item{alpha}{Significance level, with default to 0.03 (97\% confidence).}
+
+\item{hyp}{Null hypothesis value for the median, with 0 default.}
 }
 \value{
-A length-two numeric confidence interval.
+A list containing the median, sample size, confidence interval, and
+p-value.
 }
 \description{
 Uses the Hettmansperger-Sheather interpolation method.

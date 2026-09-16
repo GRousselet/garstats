@@ -807,26 +807,13 @@ winvar <- function(x, tr = .2) {
   wv
 }
 
-#' Parametric confidence interval for a median
+#' Confidence interval for a median
 #'
-#' Uses the Hettmansperger-Sheather interpolation method.
-#'
-#' @param x Numeric data vector. Missing values must be removed first.
-#' @param alpha Significance level, with default to 0.03 (97% confidence).
-#' @return A length-two numeric confidence interval.
-#'
-#' @details
-#' If there are duplicate values in `x`, a gain in power might be obtained by calling `onesampb(x, est=hd)` instead.
-#' This will provide a percentile bootstrap confidence interval for the Harrell-Davis estimator of the median.
-#'
-#' @export
-#'
-#' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
-#' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
-sint <- function(x, alpha = .03) {
-  if (any(duplicated(x))) {
-    warning("Duplicate values detected: onesampb(x, est=hd) might have more power")
-  }
+#' @param x Numeric data vector.
+#' @param alpha Significance level.
+#' @return A vector containing the lower and upper bounds of the confidence interval.
+#' @keywords internal
+sint_ci <- function(x, alpha) {
   n <- length(x)
   k <- qbinom(alpha / 2, n, .5)
   gk <- pbinom(n - k, n, .5) - pbinom(k - 1, n, .5)
@@ -846,8 +833,71 @@ sint <- function(x, alpha = .03) {
   lam <- ((n - k) * ival) / (k + (n - 2 * k) * ival)
   low <- lam * xsort[kp] + (1 - lam) * xsort[k]
   hi <- lam * xsort[nmk] + (1 - lam) * xsort[nmkp]
-  ci <- c(low, hi)
-  ci
+  c(low, hi)
+}
+
+#' Parametric confidence interval for a median
+#'
+#' Uses the Hettmansperger-Sheather interpolation method.
+#'
+#' @param x Numeric data vector for the first measurement. Missing values must
+#'   be removed first.
+#' @param y Optional numeric data vector for the second measurement. When
+#'   supplied, it must have the same length as `x` and inference is performed
+#'   on `x - y`.
+#' @param alpha Significance level, with default to 0.03 (97% confidence).
+#' @param hyp Null hypothesis value for the median, with 0 default.
+#' @return A list containing the median, sample size, confidence interval, and
+#'   p-value.
+#'
+#' @details
+#' If there are duplicate values in `x`, a gain in power might be obtained by calling `onesampb(x, est=hd)` instead.
+#' This will provide a percentile bootstrap confidence interval for the Harrell-Davis estimator of the median.
+#'
+#' @export
+#'
+#' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
+#' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
+  if (!is.numeric(alpha) || length(alpha) != 1L || !is.finite(alpha) ||
+      alpha <= 0 || alpha >= 1) {
+    stop("alpha must be a single finite number in (0, 1).")
+  }
+  if (!is.null(y) && length(x) != length(y)) {
+    stop("x and y must have equal sample sizes.")
+  }
+  if (!is.null(y)) x <- x - y
+#  if (any(duplicated(x))) {
+#    warning("Duplicate values detected: onesampb(x, est=hd) might have more power")
+#  }
+  ci <- sint_ci(x, alpha)
+  p.value <- 1
+  for (candidate.alpha in seq(.01, .99, .01)) {
+    candidate.ci <- sint_ci(x, candidate.alpha)
+    if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+      p.value <- candidate.alpha
+      break
+    }
+  }
+  if (p.value <= .01) {
+    for (candidate.alpha in seq(.001, .011, .001)) {
+      candidate.ci <- sint_ci(x, candidate.alpha)
+      if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+        p.value <- candidate.alpha
+        break
+      }
+    }
+  }
+  if (p.value <= .001) {
+    for (candidate.alpha in seq(.0001, .001, .0001)) {
+      candidate.ci <- sint_ci(x, candidate.alpha)
+      if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+        p.value <- candidate.alpha
+        break
+      }
+    }
+  }
+  list(median = median(x), n = length(x), ci = ci, p.value = p.value)
 }
 
 #' Percentile bootstrap confidence interval and p-value

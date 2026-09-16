@@ -10,6 +10,7 @@ test_that("trimmed-mean functions validate trimming proportions", {
 test_that("paired functions require equal sample sizes", {
   x <- seq_len(20)
 
+  expect_error(sint(x, x[-1]), "equal sample sizes")
   expect_error(yuend(x, x[-1]), "equal sample sizes")
   expect_error(yuendbt(x, x[-1], nboot = 10), "equal sample sizes")
   expect_error(
@@ -21,6 +22,8 @@ test_that("paired functions require equal sample sizes", {
 test_that("bootstrap interfaces reject invalid options", {
   x <- seq_len(20)
 
+  expect_error(sint(x, alpha = 0), "alpha must be")
+  expect_error(sint(x, alpha = 1), "alpha must be")
   expect_error(trimcibt(x, small.n = NA, nboot = 10), "small.n")
   expect_error(pbci("not numeric"), "numeric vector")
   expect_error(

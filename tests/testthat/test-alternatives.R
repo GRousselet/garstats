@@ -79,13 +79,28 @@ test_that("confidence intervals widen as alpha decreases", {
     yuend(x, y, alpha = 0.01)$ci
   )
   expect_wider_ci(
-    sint(x, alpha = 0.05),
-    sint(x, alpha = 0.01)
+    sint(x, alpha = 0.05)$ci,
+    sint(x, alpha = 0.01)$ci
   )
   expect_wider_ci(
     pxlyd(x, y, alpha = 0.05)$ci,
     pxlyd(x, y, alpha = 0.01)$ci
   )
+})
+
+test_that("sint returns median inference for one or paired samples", {
+  x <- seq(1, 30)
+  result <- sint(x, hyp = 0)
+  paired.result <- sint(x, rep(0, length(x)), hyp = 0)
+
+  expect_named(result, c("median", "n", "ci", "p.value"))
+  expect_equal(result$median, median(x))
+  expect_equal(result$n, length(x))
+  expect_true(all(is.finite(result$ci)))
+  expect_gte(result$p.value, 0)
+  expect_lte(result$p.value, 1)
+  expect_equal(paired.result$median, median(x))
+  expect_true(paired.result$ci[1] > 0)
 })
 
 test_that("bootstrap confidence intervals widen as alpha decreases", {
