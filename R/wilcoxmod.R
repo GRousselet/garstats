@@ -874,7 +874,8 @@ sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
   p.value <- 1
   for (candidate.alpha in seq(.01, .99, .01)) {
     candidate.ci <- sint_ci(x, candidate.alpha)
-    if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+    if (all(is.finite(candidate.ci)) &&
+        (candidate.ci[1] > hyp || candidate.ci[2] < hyp)) {
       p.value <- candidate.alpha
       break
     }
@@ -882,7 +883,8 @@ sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
   if (p.value <= .01) {
     for (candidate.alpha in seq(.001, .011, .001)) {
       candidate.ci <- sint_ci(x, candidate.alpha)
-      if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+      if (all(is.finite(candidate.ci)) &&
+          (candidate.ci[1] > hyp || candidate.ci[2] < hyp)) {
         p.value <- candidate.alpha
         break
       }
@@ -891,7 +893,8 @@ sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
   if (p.value <= .001) {
     for (candidate.alpha in seq(.0001, .001, .0001)) {
       candidate.ci <- sint_ci(x, candidate.alpha)
-      if (candidate.ci[1] > hyp || candidate.ci[2] < hyp) {
+      if (all(is.finite(candidate.ci)) &&
+          (candidate.ci[1] > hyp || candidate.ci[2] < hyp)) {
         p.value <- candidate.alpha
         break
       }

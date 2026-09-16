@@ -103,6 +103,14 @@ test_that("sint returns median inference for one or paired samples", {
   expect_true(paired.result$ci[1] > 0)
 })
 
+test_that("sint skips non-finite confidence intervals in its p-value search", {
+  result <- sint(1:3, alpha = 0.5)
+
+  expect_named(result, c("median", "n", "ci", "p.value"))
+  expect_equal(result$n, 3)
+  expect_true(is.numeric(result$p.value))
+})
+
 test_that("bootstrap confidence intervals widen as alpha decreases", {
   x <- seq(-5, 24)
   y <- seq(-7, 22)
