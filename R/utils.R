@@ -1,7 +1,3 @@
-# Nice colour palette
-# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-cpalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
 #' Package-specific ggplot2 theme
 #'
 #' @param axis.title.size Font size for axis titles.
@@ -21,7 +17,8 @@ theme_gar <- function(axis.title.size = 16,
                       strip.text.size = 20,
                       ...){
   ggplot2::`%+replace%`(ggplot2::theme_bw(), ggplot2::theme(
-    plot.title = ggplot2::element_text(size = plot.title.size),
+    plot.title = ggplot2::element_text(size = plot.title.size, hjust = 0,
+                                        margin = ggplot2::margin(b = 5.5)),
     axis.title = ggplot2::element_text(size = axis.title.size, face = "bold"),
     axis.text = ggplot2::element_text(size = axis.text.size, colour = "black"),
     legend.key.width = grid::unit(1.5, "cm"),
