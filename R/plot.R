@@ -106,6 +106,15 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
   plot <- ggplot2::ggplot(density_df, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_line(linewidth = 1.2, colour = line_colour) +
     ggplot2::labs(x = xlab, y = ylab)
+  # draw reference lines before CI labels to avoid masking
+  if (show_estimate && !is.null(estimate)) {
+    plot <- plot + ggplot2::geom_vline(xintercept = estimate,
+                                       colour = estimate_colour, linewidth = 0.8)
+  }
+  if (show_hyp && !is.null(hyp)) {
+    plot <- plot + ggplot2::geom_vline(xintercept = hyp,
+                                       linetype = hyp_linetype, linewidth = 0.8)
+  }
   if (show_ci) {
     lower_inf <- !is.finite(ci[1])
     upper_inf <- !is.finite(ci[2])
@@ -140,14 +149,6 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
                             fontface = "bold")
       }
     }
-  }
-  if (show_estimate && !is.null(estimate)) {
-    plot <- plot + ggplot2::geom_vline(xintercept = estimate,
-                                       colour = estimate_colour, linewidth = 0.8)
-  }
-  if (show_hyp && !is.null(hyp)) {
-    plot <- plot + ggplot2::geom_vline(xintercept = hyp,
-                                       linetype = hyp_linetype, linewidth = 0.8)
   }
   plot + theme
 }
