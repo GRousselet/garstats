@@ -1490,5 +1490,74 @@ mxmy <- function(x, y, est = median,...){
 }
 
 
+#' Compute the ideal fourths for data in x
+#'
+#' @param x Numeric data vector. Missing values must be removed first.
+#' @return A list containing the lower (`ql`) and upper (`qu`) ideal fourths.
+#' @export
+#' @references Carling, K. (2000). Resistant outlier rules and the non-Gaussian case.
+#' Computational Statistics & Data Analysis, 33(3), 249-258. https://doi.org/10.1016/S0167-9473(99)00057-2
+idealf <- function(x) {
+  j <- floor(length(x) / 4 + 5 / 12)
+  y <- sort(x)
+  g <- (length(x) / 4) - j + (5 / 12)
+  ql <- (1 - g) * y[j] + g * y[j + 1]
+  k <- length(x) - j + 1
+  qu <- (1 - g) * y[k] + g * y[k - 1]
+  list(ql = ql, qu = qu)
+}
+
+#' Detect outliers using a boxplot rule based on the ideal fourths
+#'
+#' This function detects outliers using the boxplot rule, but unlike the R
+#' function `boxplot()`, the ideal fourths are used to estimate the quartiles.
+#'
+#' @param x Numeric data vector. Missing values must be removed first.
+#' @param mbox Logical: if `TRUE`, use the modification of the boxplot rule
+#'   suggested by Carling (2000). Ignored when `improved = TRUE`.
+#' @param improved Logical: if `TRUE`, use the skewness-adjusted bounds
+#'   suggested by Walker et al. (2018).
+#' @param gval Optional bending constant. Defaults to 1.5 for the boxplot
+#'   rule and the skewness-adjusted rule, and to
+#'   `(17.63 * n - 23.64) / (7.74 * n - 3.71)` for Carling's modification.
+#' @return A list containing the outlier values (`out.val`), their indices
+#'   (`out.id`), the indices of the retained values (`keep`), the sample size
+#'   (`n`), the number of outliers (`n.out`), and the lower and upper bounds
+#'   (`cl` and `cu`).
+#' @export
+#' @references Carling, K. (2000). Resistant outlier rules and the non-Gaussian case.
+#' Computational Statistics & Data Analysis, 33(3), 249-258. https://doi.org/10.1016/S0167-9473(99)00057-2
+#'
+#' Walker, M. L., Dovoedo, Y. H., Chakraborti, S., & Hilton, C. W. (2018).
+#' An improved boxplot for univariate data. The American Statistician, 72(4), 348-353.
+#' https://doi.org/10.1080/00031305.2018.1448891
+outbox <- function(x, mbox = FALSE, improved = FALSE, gval = NA) {
+  n <- length(x)
+  temp <- idealf(x)
+  if (improved) {
+    M <- median(x)
+    Bc <- (temp$qu + temp$ql - 2 * M) / (temp$qu - temp$ql)
+    if (is.na(gval)) gval <- 1.5
+    cl <- temp$ql - gval * (temp$qu - temp$ql) * ((1 - Bc) / (1 + Bc))
+    cu <- temp$qu + gval * (temp$qu - temp$ql) * ((1 + Bc) / (1 - Bc))
+  } else if (mbox) {
+    if (is.na(gval)) gval <- (17.63 * n - 23.64) / (7.74 * n - 3.71)
+    cl <- median(x) - gval * (temp$qu - temp$ql)
+    cu <- median(x) + gval * (temp$qu - temp$ql)
+  } else {
+    if (is.na(gval)) gval <- 1.5
+    cl <- temp$ql - gval * (temp$qu - temp$ql)
+    cu <- temp$qu + gval * (temp$qu - temp$ql)
+  }
+  vec <- seq_len(n)
+  flag <- (x < cl) | (x > cu)
+  outid <- if (sum(flag) == 0) NULL else vec[flag]
+  keep <- vec[!flag]
+  outval <- x[flag]
+  n.out <- length(outid)
+  list(out.val = outval, out.id = outid, keep = keep, n = n, n.out = n.out, cl = cl, cu = cu)
+}
+
+
 
 
