@@ -39,17 +39,15 @@ export(yuen)
 export(yuenbt)
 export(yuend)
 export(yuendbt)
-importFrom(stats,
-  cor,
-  mad,
-  median,
-  optim,
-  pbeta,
-  pbinom,
-  pt,
-  qbinom,
-  qnorm,
-  qt,
-  quantile,
-  var
-)
+importFrom(stats,cor)
+importFrom(stats,mad)
+importFrom(stats,median)
+importFrom(stats,optim)
+importFrom(stats,pbeta)
+importFrom(stats,pbinom)
+importFrom(stats,pt)
+importFrom(stats,qbinom)
+importFrom(stats,qnorm)
+importFrom(stats,qt)
+importFrom(stats,quantile)
+importFrom(stats,var)
