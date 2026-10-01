@@ -1531,7 +1531,7 @@ idealf <- function(x) {
 #' Walker, M. L., Dovoedo, Y. H., Chakraborti, S., & Hilton, C. W. (2018).
 #' An improved boxplot for univariate data. The American Statistician, 72(4), 348-353.
 #' https://doi.org/10.1080/00031305.2018.1448891
-outbox <- function(x, mbox = FALSE, improved = FALSE, gval = NA) {
+outbox <- function(x, mbox = TRUE, improved = FALSE, gval = NA) {
   n <- length(x)
   temp <- idealf(x)
   if (improved) {

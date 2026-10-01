@@ -4,7 +4,7 @@
 \alias{outbox}
 \title{Detect outliers using a boxplot rule based on the ideal fourths}
 \usage{
-outbox(x, mbox = FALSE, improved = FALSE, gval = NA)
+outbox(x, mbox = TRUE, improved = FALSE, gval = NA)
 }
 \arguments{
 \item{x}{Numeric data vector. Missing values must be removed first.}
