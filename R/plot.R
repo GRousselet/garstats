@@ -159,10 +159,12 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
  #' estimates from group 1.
  #' @param y Numeric bootstrap estimates from group 2, when `x` is numeric.
  #' @param level Confidence level for `ggplot2::stat_ellipse()`.
+ #' @param plot_ellipse Default to TRUE to plot the confidence ellipse.
  #' @param ellipse_linetype Ellipse line type.
  #' @param ellipse_colour Ellipse colour.
  #' @param ellipse_linewidth Ellipse linewidth.
- #' @param plot_diag Default to TRUE to plot identity reference line
+ #' @param plot_diag Default to TRUE to plot identity reference line. Axis
+ #' limits are then set to the common range of both groups.
  #' @param diag_linetype Identity reference line type.
  #' @param diag_colour Identity reference line colour.
  #' @param diag_linewidth Identity reference line width.
@@ -173,7 +175,7 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
 #' @param ... Additional arguments passed to `ggplot2::geom_point()`.
  #' @return A ggplot object.
  #' @export
-plot_boot2 <- function(x, y = NULL, level = 0.97,
+plot_boot2 <- function(x, y = NULL, level = 0.97, plot_ellipse = TRUE,
                        ellipse_linetype = "dashed", ellipse_colour = "darkorange",
                        ellipse_linewidth = 1,
                        plot_diag = TRUE, diag_linetype = "dashed",
@@ -196,15 +198,20 @@ plot_boot2 <- function(x, y = NULL, level = 0.97,
   if (is.null(plot_theme)) plot_theme <- garstats::theme_gar()
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_point(colour = point_colour, alpha = point_alpha, ...) +
-    ggplot2::stat_ellipse(level = level, linetype = ellipse_linetype,
-                          colour = ellipse_colour, linewidth = ellipse_linewidth) +
     ggplot2::labs(x = xlab, y = ylab) +
     plot_theme +
     ggplot2::theme(aspect.ratio = 1)
+  if (plot_ellipse) {
+    plot <- plot +
+      ggplot2::stat_ellipse(level = level, linetype = ellipse_linetype,
+                            colour = ellipse_colour, linewidth = ellipse_linewidth)
+  }
   if (plot_diag){
+    lims <- range(x, y)
     plot <- plot +
       ggplot2::geom_abline(slope = 1, intercept = 0, colour = diag_colour,
-                           linewidth = diag_linewidth, linetype = diag_linetype)
+                           linewidth = diag_linewidth, linetype = diag_linetype) +
+      ggplot2::coord_cartesian(xlim = lims, ylim = lims)
   }
   plot
 }
