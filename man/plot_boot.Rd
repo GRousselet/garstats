@@ -7,11 +7,14 @@
 plot_boot(
   x,
   ci = NULL,
-  ci_level = 0.97,
+  ci_level = NULL,
   alternative = c("two.sided", "less", "greater"),
   estimate = NULL,
   hyp = NULL,
   show_hyp = TRUE,
+  pval = NULL,
+  show_pval = TRUE,
+  pval_size = 5,
   label_x_offset = NULL,
   label_y_offset = NULL,
   label_height = 0.1,
@@ -37,12 +40,11 @@ plot_boot(
 \code{boot.estimates}.}
 
 \item{ci}{Optional length-two confidence interval. If \code{x} is a result
-list, \code{ci} is taken from \code{x$ci} when available. May include \code{-Inf}
-or \code{Inf} for a one-sided interval; its finite bound is drawn as a
-full-height dashed vertical line.}
+list, \code{ci} is taken from \code{x$ci} by default; if \code{x} is a vector, it is
+computed with \code{pbci()} for the confidence level in \code{ci_level}. Supplying a \code{ci} vector will override the results from \code{x}.}
 
 \item{ci_level}{Confidence level used to compute \code{ci} from \code{x} when \code{ci}
-is not supplied.}
+is not supplied. Defaults to 0.97 when NULL.}
 
 \item{alternative}{Type of interval when \code{ci} is computed from \code{ci_level}:
 \code{"two.sided"} (default), \code{"less"} (upper bound only), or \code{"greater"}
@@ -51,11 +53,20 @@ is not supplied.}
 \item{estimate}{Optional point estimate. If \code{x} is a result list,
 \code{estimate} is taken from \code{x$estimate} when available.}
 
-\item{hyp}{Optional null-hypothesis value. If \code{x} is a result list,
+\item{hyp}{Optional (null) hypothesis value. If \code{x} is a result list,
 \code{hyp} is taken from \code{x$hyp} when available.}
 
-\item{show_hyp}{Logical; draw the null-hypothesis reference line when a
+\item{show_hyp}{Logical; draw the hypothesis reference line when a
 finite \code{hyp} value is available.}
+
+\item{pval}{Optional p-value. If \code{x} is a result list, \code{pval} is taken
+from \code{x$p.value}; if \code{x} is a vector, it is computed with \code{pbci()}
+against \code{hyp} (0 if not supplied). Supply \code{pval} to override results from \code{x}.}
+
+\item{show_pval}{Logical; show "p = ..." in the top left corner when a
+p-value is available.}
+
+\item{pval_size}{Font size of the p-value text.}
 
 \item{label_x_offset}{Horizontal label offset in data units. By default,
 a data-dependent offset of 3\% of the bootstrap range is used.}
@@ -96,8 +107,7 @@ confidence interval, and estimate.}
 A ggplot object.
 }
 \description{
-Draws a density curve for a bootstrap distribution exported by the
-functions in \code{wilcoxmod.R}. The \code{x} argument may be either the numeric
-\code{boot.estimates} vector or the complete result list returned by a bootstrap
-function.
+Draws a density curve for a bootstrap distribution. The \code{x} argument may be either a numeric
+vector or the complete result list returned by a bootstrap
+function such as \code{onesampb} or \code{twosampb}.
 }

@@ -8,6 +8,7 @@ plot_boot2(
   x,
   y = NULL,
   level = 0.97,
+  plot_ellipse = TRUE,
   ellipse_linetype = "dashed",
   ellipse_colour = "darkorange",
   ellipse_linewidth = 1,
@@ -31,13 +32,16 @@ estimates from group 1.}
 
 \item{level}{Confidence level for \code{ggplot2::stat_ellipse()}.}
 
+\item{plot_ellipse}{Default to TRUE to plot the confidence ellipse.}
+
 \item{ellipse_linetype}{Ellipse line type.}
 
 \item{ellipse_colour}{Ellipse colour.}
 
 \item{ellipse_linewidth}{Ellipse linewidth.}
 
-\item{plot_diag}{Default to TRUE to plot identity reference line}
+\item{plot_diag}{Default to TRUE to plot identity reference line. Axis
+limits are then set to the common range of both groups.}
 
 \item{diag_linetype}{Identity reference line type.}
 

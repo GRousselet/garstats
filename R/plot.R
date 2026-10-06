@@ -2,26 +2,24 @@ utils::globalVariables(c("gp", "x", "y"))
 
 #' Plot a bootstrap distribution
 #'
-#' Draws a density curve for a bootstrap distribution exported by the
-#' functions in `wilcoxmod.R`. The `x` argument may be either the numeric
-#' `boot.estimates` vector or the complete result list returned by a bootstrap
-#' function.
+#' Draws a density curve for a bootstrap distribution. The `x` argument may be either a numeric
+#' vector or the complete result list returned by a bootstrap
+#' function such as `onesampb` or `twosampb`.
 #' @param x Numeric bootstrap estimates, or a result list containing
 #'   `boot.estimates`.
 #' @param ci Optional length-two confidence interval. If `x` is a result
-#'   list, `ci` is taken from `x$ci` when available. May include `-Inf`
-#'   or `Inf` for a one-sided interval; its finite bound is drawn as a
-#'   full-height dashed vertical line.
+#'   list, `ci` is taken from `x$ci` by default; if `x` is a vector, it is
+#'   computed with `pbci()` for the confidence level in `ci_level`. Supplying a `ci` vector will override the results from `x`.
 #' @param ci_level Confidence level used to compute `ci` from `x` when `ci`
-#'   is not supplied.
+#'   is not supplied. Defaults to 0.97 when NULL.
 #' @param alternative Type of interval when `ci` is computed from `ci_level`:
 #'   `"two.sided"` (default), `"less"` (upper bound only), or `"greater"`
 #'   (lower bound only).
 #' @param estimate Optional point estimate. If `x` is a result list,
 #'   `estimate` is taken from `x$estimate` when available.
-#' @param hyp Optional null-hypothesis value. If `x` is a result list,
+#' @param hyp Optional (null) hypothesis value. If `x` is a result list,
 #'   `hyp` is taken from `x$hyp` when available.
-#' @param show_hyp Logical; draw the null-hypothesis reference line when a
+#' @param show_hyp Logical; draw the hypothesis reference line when a
 #'   finite `hyp` value is available.
 #' @param label_x_offset Horizontal label offset in data units. By default,
 #'   a data-dependent offset of 3% of the bootstrap range is used.
@@ -29,6 +27,12 @@ utils::globalVariables(c("gp", "x", "y"))
 #'   a data-dependent offset of 3% of the density height is used.
 #' @param label_height Height of the label position as a fraction of the
 #'   density height. Defaults to 0.1.
+#' @param pval Optional p-value. If `x` is a result list, `pval` is taken
+#'   from `x$p.value`; if `x` is a vector, it is computed with `pbci()`
+#'   against `hyp` (0 if not supplied). Supply `pval` to override results from `x`.
+#' @param show_pval Logical; show "p = ..." in the top left corner when a
+#'   p-value is available.
+#' @param pval_size Font size of the p-value text.
 #' @param show_ci Logical; draw the confidence interval when `ci` is available.
 #' @param show_estimate Logical; draw the point estimate when `estimate` is
 #'   available.
@@ -46,9 +50,10 @@ utils::globalVariables(c("gp", "x", "y"))
 #'
 #' @return A ggplot object.
 #' @export
-plot_boot <- function(x, ci = NULL, ci_level = 0.97,
+plot_boot <- function(x, ci = NULL, ci_level = NULL,
                       alternative = c("two.sided", "less", "greater"),
                       estimate = NULL, hyp = NULL, show_hyp = TRUE,
+                      pval = NULL, show_pval = TRUE, pval_size = 5,
                       label_x_offset = NULL, label_y_offset = NULL,
                       label_height = 0.1, show_ci = TRUE,
                       show_estimate = TRUE, xlab = NULL, ylab = NULL,
@@ -64,24 +69,14 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
     x <- result$boot.estimates
     if (is.null(estimate)) estimate <- result$estimate
     if (is.null(hyp)) hyp <- result$hyp
+    if (is.null(pval)) pval <- result$p.value
+    if (is.null(ci)) ci <- result$ci
   }
   if (!is.numeric(x) || length(x) < 2L || any(!is.finite(x))) {
     stop("x must contain at least two finite numeric estimates.")
   }
-  if (is.null(ci)) {
-    if (!is.numeric(ci_level) || length(ci_level) != 1L || ci_level <= 0 || ci_level >= 1) {
-      stop("ci_level must be a single value strictly between 0 and 1.")
-    }
-    alpha <- 1 - ci_level
-    ci <- switch(alternative,
-      two.sided = quantile(x, c(alpha / 2, 1 - alpha / 2), names = FALSE),
-      less = c(-Inf, quantile(x, ci_level, names = FALSE)),
-      greater = c(quantile(x, alpha, names = FALSE), Inf)
-    )
-  } else {
-    if (!is.numeric(ci) || length(ci) != 2L || anyNA(ci)) {
-      stop("ci must be a numeric vector of length two without NA values.")
-    }
+  if (!is.null(ci) && (!is.numeric(ci) || length(ci) != 2L || anyNA(ci))) {
+    stop("ci must be a numeric vector of length two without NA values.")
   }
   if (!is.null(estimate) &&
       (!is.numeric(estimate) || length(estimate) != 1L || !is.finite(estimate))) {
@@ -90,6 +85,21 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
   if (!is.null(hyp) &&
       (!is.numeric(hyp) || length(hyp) != 1L || !is.finite(hyp))) {
     stop("hyp must be one finite numeric value.")
+  }
+  if (!is.null(pval) &&
+      (!is.numeric(pval) || length(pval) != 1L || !is.finite(pval))) {
+    stop("pval must be one finite numeric value.")
+  }
+  if (is.null(ci) || is.null(pval)) {
+    if (is.null(ci_level)) ci_level <- 0.97
+    if (!is.numeric(ci_level) || length(ci_level) != 1L || ci_level <= 0 || ci_level >= 1) {
+      stop("ci_level must be a single value strictly between 0 and 1.")
+    }
+    computed <- pbci(x, alpha = 1 - ci_level,
+                     hyp = if (is.null(hyp)) 0 else hyp,
+                     alternative = alternative)
+    if (is.null(ci)) ci <- computed$ci
+    if (is.null(pval)) pval <- computed$p.value
   }
   density_data <- stats::density(x, ...)
   density_df <- data.frame(x = density_data$x, y = density_data$y)
@@ -149,6 +159,13 @@ plot_boot <- function(x, ci = NULL, ci_level = 0.97,
                             fontface = "bold")
       }
     }
+  }
+  if (show_pval && !is.null(pval)) {
+    plot <- plot + ggplot2::annotate(
+      "label", x = -Inf, y = Inf, label = paste("p =", round(pval, 3)),
+      hjust = -0.1, vjust = 1.2, size = pval_size,
+      fill = "white", linewidth = 0
+    )
   }
   plot + theme
 }
