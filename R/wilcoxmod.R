@@ -1103,6 +1103,89 @@ twosampb <- function(x, y = NULL, alpha = .03, nboot = 2000, est = hd,
   )
 }
 
+#' Two-sample percentile bootstrap inference for a joint statistic
+#'
+#' Like [twosampb()], but the estimator is applied jointly to both groups
+#' instead of separately to each group. By default the statistic is the median
+#' of all pairwise differences, computed by [mxmy()]. Missing values are not
+#' removed internally.
+#'
+#' @param x Numeric vector for group 1, or a two-column numeric matrix when
+#'   `ind = FALSE` and `y` is omitted.
+#' @param y Numeric vector for group 2. Omit when `x` is a two-column matrix.
+#' @param est Function with arguments `x` and `y` returning a single number.
+#'   Defaults to [mxmy()].
+#' @param alpha Significance level, with default to 0.03 (97% intended coverage).
+#' @param nboot Number of bootstrap samples.
+#' @param hyp Null hypothesis value for the statistic.
+#' @param alternative Alternative hypothesis: "two.sided", "greater", or "less".
+#' @param q.type Type of quantile estimator. Default to 6.
+#' @param ind Logical; if `TRUE` (default), resample the two groups
+#'   independently. If `FALSE`, resample rows of paired observations; the two
+#'   groups must have equal lengths.
+#' @param small.n Logical; apply the small-sample correction
+#'   `(count + 1) / (nboot + 1)` to the bootstrap p-value.
+#' @param ... Additional arguments passed to `est`.
+#' @return A list containing the estimate, confidence interval, p-value, sample
+#'   sizes, bootstrap estimates, and bootstrap variance.
+#' @export
+#' @seealso [twosampb()], [mxmy()], [pxly()]
+#' @examples
+#' set.seed(666)
+#' x <- rnorm(20, mean = 1)
+#' y <- rnorm(20)
+#' twosampb_joint(x, y)
+#' # Probability that a random x is less than a random y
+#' twosampb_joint(x, y, est = pxly, hyp = 0.5)
+#' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
+#' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+twosampb_joint <- function(x, y = NULL, est = mxmy, alpha = .03, nboot = 2000,
+                           hyp = 0, alternative = c("two.sided", "greater", "less"),
+                           q.type = 6, ind = TRUE, small.n = TRUE, ...) {
+  alternative <- match.arg(alternative)
+  if (length(small.n) != 1L || !is.logical(small.n) || is.na(small.n)) {
+    stop("small.n must be TRUE or FALSE.")
+  }
+  if (!ind && is.null(y)) {
+    if (!is.matrix(x) || ncol(x) != 2L) {
+      stop("For ind = FALSE with y omitted, x must be a matrix with two columns.")
+    }
+    y <- x[, 2]
+    x <- x[, 1]
+  }
+  if (is.null(y)) {
+    stop("y must be supplied unless x is a two-column matrix and ind = FALSE.")
+  }
+  if (!ind && length(x) != length(y)) {
+    stop("Paired x and y must have the same length.")
+  }
+
+  boot.estimates <- vapply(seq_len(nboot), function(i) {
+    if (ind) {
+      est(sample(x, length(x), replace = TRUE),
+          sample(y, length(y), replace = TRUE), ...)
+    } else {
+      index <- sample(seq_along(x), length(x), replace = TRUE)
+      est(x[index], y[index], ...)
+    }
+  }, numeric(1))
+
+  result <- pbci(boot.estimates, alpha, hyp, alternative, q.type, small.n)
+  list(
+    estimate = est(x, y, ...),
+    ci = result$ci,
+    p.value = result$p.value,
+    hyp = hyp,
+    alternative = alternative,
+    small.n = small.n,
+    sq.se = var(boot.estimates),
+    boot.estimates = boot.estimates,
+    ind = ind,
+    n1 = length(x),
+    n2 = length(y)
+  )
+}
+
 #' Evaluate Huber's Psi function for each value in the vector x
 #'
 #' @param x Numeric values.
