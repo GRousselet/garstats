@@ -141,7 +141,7 @@ trimci <- function(x, tr = .2, alpha = .03, hyp = 0,
 #' @param hyp Hypothesis value for the trimmed mean. Default to the null.
 #' @param alternative Alternative hypothesis: "two.sided", "greater", or
 #'   "less".
-#' @param small.n Logical; apply the small-sample correction
+#' @param small.n Logical; apply the finite resampling correction
 #'   `(tail.count + 1) / (nboot + 1)` to the bootstrap p-value.
 #'
 #' @return A list containing the trimmed-mean estimate, confidence interval,
@@ -149,6 +149,8 @@ trimci <- function(x, tr = .2, alpha = .03, hyp = 0,
 #'   t-statistics.
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 #'
 #' @examples
 #' set.seed(666)
@@ -276,6 +278,8 @@ trimcibt <- function(x, tr = .2, alpha = .03, nboot = 2000,
 #'
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 #'
 #' @examples
 #' set.seed(666)
@@ -357,7 +361,7 @@ yuen <- function(x, y = NULL, tr = .2, alpha = .05,
 #' @param q.type Type of quantile estimator to compute bootstrap interval. Default to 6.
 #' @param alternative Alternative hypothesis: "two.sided", "greater", or "less".
 #' @param hyp Hypothesis value for the difference in trimmed means (default to null).
-#' @param small.n Logical, default is TRUE to apply the small-sample correction
+#' @param small.n Logical, default is TRUE to apply the finite resampling correction
 #'   `(tail.count + 1) / (nboot + 1)` to bootstrap p-values.
 #'
 #' @return A list containing the confidence interval, test statistic,
@@ -366,6 +370,8 @@ yuen <- function(x, y = NULL, tr = .2, alpha = .05,
 #'
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 #'
 #' @examples
 #' set.seed(666)
@@ -561,7 +567,7 @@ yuend <- function(x, y, tr = .2, alpha = .05) {
 #'   Default to 6.
 #' @param alternative Alternative hypothesis: "two.sided", "greater", or "less".
 #' @param hyp Hypothesis value for the difference in trimmed means. Default to 0.
-#' @param small.n Default to TRUE to apply the small-sample correction
+#' @param small.n Default to TRUE to apply the finite resampling correction
 #'   `(tail.count + 1) / (nboot + 1)` to the bootstrap p-value.
 #'
 #' @return A list containing the confidence interval, trimmed mean estimates,
@@ -919,7 +925,7 @@ sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
 #' @param hyp Hypothesis value, with default to 0.
 #' @param alternative Alternative hypothesis: "two.sided", "greater", or "less".
 #' @param q.type Type of quantile estimator. Default to 6.
-#' @param small.n Logical; apply the small-sample correction
+#' @param small.n Logical; apply the finite resampling correction
 #'   `(count + 1) / (nboot + 1)` to the bootstrap p-value.
 #' @details
 #' For "greater" the confidence interval is `[lower bound, Inf]`.
@@ -929,6 +935,8 @@ sint <- function(x, y = NULL, alpha = .03, hyp = 0) {
 #' @export
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 pbci <- function(x, alpha = .03, hyp = 0,
                 alternative = c("two.sided", "greater", "less"),
                 q.type = 6, small.n = TRUE) {
@@ -976,7 +984,7 @@ pbci <- function(x, alpha = .03, hyp = 0,
 #' @param hyp Hypothesis value, with default to 0.
 #' @param alternative Alternative hypothesis: "two.sided", "greater", or "less".
 #' @param q.type Type of quantile estimator. Default to 6.
-#' @param small.n Logical; apply the small-sample correction
+#' @param small.n Logical; apply the finite resampling correction
 #'   `(count + 1) / (nboot + 1)` to the bootstrap p-value.
 #' @param ... Additional arguments passed to `est`, for instance `tr` for the trimmed mean or `q` for `hd`.
 #' @return A list containing the percentile confidence interval, estimate,
@@ -984,6 +992,8 @@ pbci <- function(x, alpha = .03, hyp = 0,
 #' @export
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 onesampb <- function(x, est = hd, alpha = .03, nboot = 2000, hyp = 0,
                      alternative = c("two.sided", "greater", "less"),
                      q.type = 6, small.n = TRUE, ...) {
@@ -1026,7 +1036,7 @@ onesampb <- function(x, est = hd, alpha = .03, nboot = 2000, hyp = 0,
 #' @param ind Logical; if `TRUE` (default), resample the two groups
 #'   independently. If `FALSE`, resample rows of paired observations; the two groups must have
 #'   equal lengths.
-#' @param small.n Logical; apply the small-sample correction
+#' @param small.n Logical; apply the finite resampling correction
 #'   `(count + 1) / (nboot + 1)` to the bootstrap p-value.
 #' @param ... Additional arguments passed to `est`.
 #' @return A list containing estimates, confidence interval, p-value, sample
@@ -1034,6 +1044,8 @@ onesampb <- function(x, est = hd, alpha = .03, nboot = 2000, hyp = 0,
 #' @export
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 twosampb <- function(x, y = NULL, alpha = .03, nboot = 2000, est = hd,
                      hyp = 0, alternative = c("two.sided", "greater", "less"),
                      q.type = 6, ind = TRUE, small.n = TRUE, ...) {
@@ -1123,7 +1135,7 @@ twosampb <- function(x, y = NULL, alpha = .03, nboot = 2000, est = hd,
 #' @param ind Logical; if `TRUE` (default), resample the two groups
 #'   independently. If `FALSE`, resample rows of paired observations; the two
 #'   groups must have equal lengths.
-#' @param small.n Logical; apply the small-sample correction
+#' @param small.n Logical; apply the finite resampling correction
 #'   `(count + 1) / (nboot + 1)` to the bootstrap p-value.
 #' @param ... Additional arguments passed to `est`.
 #' @return A list containing the estimate, confidence interval, p-value, sample
@@ -1139,6 +1151,8 @@ twosampb <- function(x, y = NULL, alpha = .03, nboot = 2000, est = hd,
 #' twosampb_joint(x, y, est = pxly, hyp = 0.5)
 #' @references Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 #' Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+#' Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+#' Cambridge: Cambridge University Press.
 twosampb_joint <- function(x, y = NULL, est = mxmy, alpha = .03, nboot = 2000,
                            hyp = 0, alternative = c("two.sided", "greater", "less"),
                            q.type = 6, ind = TRUE, small.n = TRUE, ...) {
@@ -1640,7 +1654,6 @@ outbox <- function(x, mbox = TRUE, improved = FALSE, gval = NA) {
   n.out <- length(outid)
   list(out.val = outval, out.id = outid, keep = keep, n = n, n.out = n.out, cl = cl, cu = cu)
 }
-
 
 
 

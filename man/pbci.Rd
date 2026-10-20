@@ -26,7 +26,7 @@ from \code{\link[=onesampb]{onesampb()}} or \code{\link[=twosampb]{twosampb()}} 
 
 \item{q.type}{Type of quantile estimator. Default to 6.}
 
-\item{small.n}{Logical; apply the small-sample correction
+\item{small.n}{Logical; apply the finite resampling correction
 \code{(count + 1) / (nboot + 1)} to the bootstrap p-value.}
 }
 \value{
@@ -48,4 +48,6 @@ For "less" the confidence interval is \verb{[-Inf, upper bound]}.
 \references{
 Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+Cambridge: Cambridge University Press.
 }

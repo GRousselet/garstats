@@ -40,7 +40,7 @@ twosampb(
 independently. If \code{FALSE}, resample rows of paired observations; the two groups must have
 equal lengths.}
 
-\item{small.n}{Logical; apply the small-sample correction
+\item{small.n}{Logical; apply the finite resampling correction
 \code{(count + 1) / (nboot + 1)} to the bootstrap p-value.}
 
 \item{...}{Additional arguments passed to \code{est}.}
@@ -56,4 +56,6 @@ Missing values are not removed internally.
 \references{
 Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+Cambridge: Cambridge University Press.
 }

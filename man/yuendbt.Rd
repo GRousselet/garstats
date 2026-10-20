@@ -40,7 +40,7 @@ Default to 6.}
 
 \item{hyp}{Hypothesis value for the difference in trimmed means. Default to 0.}
 
-\item{small.n}{Default to TRUE to apply the small-sample correction
+\item{small.n}{Default to TRUE to apply the finite resampling correction
 \code{(tail.count + 1) / (nboot + 1)} to the bootstrap p-value.}
 }
 \value{
@@ -69,4 +69,6 @@ yuendbt(x, y, alternative = "less")
 \references{
 Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+Cambridge: Cambridge University Press.
 }

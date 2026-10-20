@@ -36,7 +36,7 @@ bootstrap statistics.}
 \item{alternative}{Alternative hypothesis: "two.sided", "greater", or
 "less".}
 
-\item{small.n}{Logical; apply the small-sample correction
+\item{small.n}{Logical; apply the finite resampling correction
 \code{(tail.count + 1) / (nboot + 1)} to the bootstrap p-value.}
 }
 \value{
@@ -61,4 +61,6 @@ trimcibt(x, ci.type = "asymmetric", alternative = "less")
 \references{
 Wilcox, Rand R. 2022. Introduction to Robust Estimation and Hypothesis Testing. 5th edn.
 Statistical Modeling and Decision Science. San Diego, CA: Academic Press.
+Davison, A. C., and Hinkley, D. V. (1997), Bootstrap Methods and Their Applications,
+Cambridge: Cambridge University Press.
 }
